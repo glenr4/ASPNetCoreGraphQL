@@ -1,4 +1,4 @@
-
+﻿using GraphiQl;
 using GraphQL;
 using GraphQL.Types;
 using Microsoft.AspNetCore.Builder;
@@ -11,48 +11,48 @@ using NHLStats.Core.Data;
 using NHLStats.Data;
 using NHLStats.Data.Repositories;
 
-
 namespace NHLStats.Api
 {
-    public class Startup
-    {
-        public Startup(IConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
+	public class Startup
+	{
+		public Startup(IConfiguration configuration)
+		{
+			Configuration = configuration;
+		}
 
-        public IConfiguration Configuration { get; }
+		public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services)
-        {
-            services.AddMvc();
+		// This method gets called by the runtime. Use this method to add services to the container.
+		public void ConfigureServices(IServiceCollection services)
+		{
+			services.AddMvc();
 
-            services.AddDbContext<NHLStatsContext>(options => options.UseSqlServer(Configuration["ConnectionStrings:NHLStatsDb"]));
-            services.AddTransient<IPlayerRepository, PlayerRepository>();
-            services.AddTransient<ISkaterStatisticRepository, SkaterStatisticRepository>();
-            services.AddSingleton<IDocumentExecuter, DocumentExecuter>();
-            services.AddSingleton<NHLStatsQuery>();
-            services.AddSingleton<NHLStatsMutation>();
-            services.AddSingleton<PlayerType>();
-            services.AddSingleton<PlayerInputType>();
-            services.AddSingleton<SkaterStatisticType>();
+			services.AddDbContext<NHLStatsContext>(options => options.UseSqlServer(Configuration["ConnectionStrings:NHLStatsDb"]));
+			services.AddTransient<IPlayerRepository, PlayerRepository>();
+			services.AddTransient<ISkaterStatisticRepository, SkaterStatisticRepository>();
+			services.AddSingleton<IDocumentExecuter, DocumentExecuter>();
+			services.AddSingleton<NHLStatsQuery>();
+			services.AddSingleton<NHLStatsMutation>();
+			services.AddSingleton<PlayerType>();
+			services.AddSingleton<PlayerInputType>();
+			services.AddSingleton<SkaterStatisticType>();
 			services.AddSingleton<AddressType>();
-            var sp = services.BuildServiceProvider();
-            services.AddSingleton<ISchema>(new NHLStatsSchema(new FuncDependencyResolver(type => sp.GetService(type))));
-        }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, NHLStatsContext db)
-        {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
+			var sp = services.BuildServiceProvider();
+			services.AddSingleton<ISchema>(new NHLStatsSchema(new FuncDependencyResolver(type => sp.GetService(type))));
+		}
 
-            app.UseGraphiQl();
-            app.UseMvc();
-            db.EnsureSeedData();
-        }
-    }
+		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+		public void Configure(IApplicationBuilder app, IHostingEnvironment env, NHLStatsContext db)
+		{
+			if (env.IsDevelopment())
+			{
+				app.UseDeveloperExceptionPage();
+			}
+
+			app.UseGraphiQl();
+			app.UseMvc();
+			db.EnsureSeedData();
+		}
+	}
 }
