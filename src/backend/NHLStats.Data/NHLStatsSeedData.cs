@@ -1,4 +1,4 @@
-﻿ 
+ 
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -54,6 +54,17 @@ namespace NHLStats.Data
                 db.SaveChanges();
             }
 
+			if (!db.Addresses.Any())
+			{
+				var addresses = new List<Address>
+				{
+				   new Address { PlayerId=1, Street="Some where street", City="Some where"},
+				   new Address { PlayerId=2, Street="Some where street 2", City="Some where 2", PostCode="12345"},
+				   new Address { PlayerId=3, Street="Some where street 3", City="Some where3 ", PostCode="12345"},
+				};
+				db.Addresses.AddRange(addresses);
+				db.SaveChanges();
+			}
             if (!db.Seasons.Any())
             {
                 var seasons = new List<Season>

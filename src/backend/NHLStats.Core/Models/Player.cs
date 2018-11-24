@@ -1,4 +1,4 @@
-﻿
+
 
 using System;
 using System.Collections.Generic;
@@ -15,6 +15,7 @@ namespace NHLStats.Core.Models
         public int WeightLbs { get; set; }
 
         public List<SkaterStatistic> SkaterStatistics { get; set; }
+		public List<Address> Addresses { get; set; }
     }
 }
 

@@ -1,4 +1,4 @@
-﻿
+
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using NHLStats.Core.Models;
@@ -11,5 +11,6 @@ namespace NHLStats.Core.Data
         Task<Player> GetRandom();
         Task<List<Player>> All();
         Task<Player> Add(Player player);
+		Task<List<Address>> GetAddresses(int playerId);
     }
 }

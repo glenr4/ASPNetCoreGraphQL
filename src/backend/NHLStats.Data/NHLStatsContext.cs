@@ -1,4 +1,4 @@
-﻿ 
+ 
 using Microsoft.EntityFrameworkCore;
 using NHLStats.Core.Models;
 
@@ -19,6 +19,6 @@ namespace NHLStats.Data
         public DbSet<Team> Teams { get; set; }
         public DbSet<League> Leagues { get; set; }
         public DbSet<SkaterStatistic> SkaterStatistics { get; set; }
-        
+		public DbSet<Address> Addresses { get; set; }
     }
 }

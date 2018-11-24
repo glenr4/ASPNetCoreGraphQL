@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
@@ -40,6 +40,27 @@ namespace NHLStats.Data.Migrations
                     table.PrimaryKey("PK_Players", x => x.Id);
                 });
 
+			migrationBuilder.CreateTable(
+				name: "Addresses",
+				columns: table => new
+				{
+					Id = table.Column<int>(nullable: false)
+						.Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+					Street = table.Column<string>(nullable: false),
+					City = table.Column<string>(nullable: false),
+					PostCode = table.Column<string>(nullable: true),
+					PlayerId = table.Column<int>(nullable: false)
+				},
+				constraints: table =>
+				{
+					table.PrimaryKey("PK_Addresses", x => x.Id);
+					table.ForeignKey(
+						name: "FK_Addresses_Players_PlayerId",
+						column: x => x.PlayerId,
+						principalTable: "Players",
+						principalColumn: "Id",
+						onDelete: ReferentialAction.Cascade);
+				});
             migrationBuilder.CreateTable(
                 name: "Seasons",
                 columns: table => new

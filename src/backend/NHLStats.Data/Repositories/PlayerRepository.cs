@@ -1,4 +1,4 @@
-﻿
+
  
 using System;
 using System.Collections.Generic;
@@ -40,5 +40,11 @@ namespace NHLStats.Data.Repositories
             await _db.SaveChangesAsync();
             return player;
         }
+		public async Task<List<Address>> GetAddresses(int playerId)
+		{
+			var list = await _db.Addresses.Where(a => a.PlayerId == playerId).ToListAsync();
+
+			return list;
+		}
     }
 }

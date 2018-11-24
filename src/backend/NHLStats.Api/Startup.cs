@@ -1,4 +1,4 @@
-﻿
+
 using GraphQL;
 using GraphQL.Types;
 using Microsoft.AspNetCore.Builder;
@@ -37,6 +37,7 @@ namespace NHLStats.Api
             services.AddSingleton<PlayerType>();
             services.AddSingleton<PlayerInputType>();
             services.AddSingleton<SkaterStatisticType>();
+			services.AddSingleton<AddressType>();
             var sp = services.BuildServiceProvider();
             services.AddSingleton<ISchema>(new NHLStatsSchema(new FuncDependencyResolver(type => sp.GetService(type))));
         }
