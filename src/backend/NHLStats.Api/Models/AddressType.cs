@@ -10,7 +10,7 @@ namespace NHLStats.Api.Models
 			Field(x => x.Id);
 			Field(x => x.Street);
 			Field(x => x.City);
-			Field(x => x.PostCode, true);   // true -> nullable
+			Field(x => x.PostCode, nullable: true);
 		}
 	}
 }

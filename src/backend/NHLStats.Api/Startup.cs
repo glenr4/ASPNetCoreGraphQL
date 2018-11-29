@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Console;
 using NHLStats.Api.Models;
 using NHLStats.Core.Data;
 using NHLStats.Data;
@@ -15,6 +17,18 @@ namespace NHLStats.Api
 {
 	public class Startup
 	{
+		// Log everything
+		//public static readonly LoggerFactory MyLoggerFactory
+		//	= new LoggerFactory(new[] { new ConsoleLoggerProvider((_, __) => true, true) });
+
+		// Log only query execution
+		public static readonly LoggerFactory MyLoggerFactory = new LoggerFactory(new[]
+												{
+													new ConsoleLoggerProvider((category, level)
+														=> category == DbLoggerCategory.Database.Command.Name
+														   && level == LogLevel.Information, true)
+												});
+
 		public Startup(IConfiguration configuration)
 		{
 			Configuration = configuration;
@@ -27,7 +41,10 @@ namespace NHLStats.Api
 		{
 			services.AddMvc();
 
-			services.AddDbContext<NHLStatsContext>(options => options.UseSqlServer(Configuration["ConnectionStrings:NHLStatsDb"]));
+			services.AddDbContext<NHLStatsContext>(options => options.UseSqlServer(Configuration["ConnectionStrings:NHLStatsDb"])
+																		.UseLoggerFactory(MyLoggerFactory)  // Warning: Do not create a new ILoggerFactory instance each time
+																		);
+
 			services.AddTransient<IPlayerRepository, PlayerRepository>();
 			services.AddTransient<ISkaterStatisticRepository, SkaterStatisticRepository>();
 			services.AddSingleton<IDocumentExecuter, DocumentExecuter>();
