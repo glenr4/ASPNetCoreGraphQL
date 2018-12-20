@@ -19,5 +19,17 @@ namespace NHLStats.Data
 		public DbSet<League> Leagues { get; set; }
 		public DbSet<SkaterStatistic> SkaterStatistics { get; set; }
 		public DbSet<Address> Addresses { get; set; }
-	}
+
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+
+            builder.Entity<Address>(e =>
+            {
+                e.HasOne(o => o.Player)
+                    .WithMany(o => o.Addresses)
+                    .HasForeignKey(o => o.PlayerId);
+            });
+        }
+    }
 }

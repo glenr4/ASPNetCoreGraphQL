@@ -7,5 +7,6 @@
 		public string City { get; set; }
 		public string PostCode { get; set; }
 		public int PlayerId { get; set; }
+        public Player Player { get; set; }
 	}
 }
