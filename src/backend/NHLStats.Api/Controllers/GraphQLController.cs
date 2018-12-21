@@ -2,7 +2,9 @@
 using GraphQL.Types;
 using Microsoft.AspNetCore.Mvc;
 using NHLStats.Api.Models;
+using Serilog;
 using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace NHLStats.Api.Controllers
@@ -11,17 +13,23 @@ namespace NHLStats.Api.Controllers
     public class GraphQLController : Controller
     {
         private readonly IDocumentExecuter _documentExecuter;
+        private readonly ILogger _logger;
         private readonly ISchema _schema;
 
-        public GraphQLController(ISchema schema, IDocumentExecuter documentExecuter)
+        public GraphQLController(ISchema schema, IDocumentExecuter documentExecuter, ILogger logger)
         {
             _schema = schema;
             _documentExecuter = documentExecuter;
+            _logger = logger;
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody] GraphQLQuery query)
+        public async Task<IActionResult> GraphQLPost([FromBody] GraphQLQuery query)
         {
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+            //_logger.Information($"GraphQLPost started");
+
             if (query == null) { throw new ArgumentNullException(nameof(query)); }
             Inputs inputs = query.Variables.ToInputs();
             ExecutionOptions executionOptions = new ExecutionOptions
@@ -37,6 +45,10 @@ namespace NHLStats.Api.Controllers
             {
                 return BadRequest(result);
             }
+
+            sw.Stop();
+            //_logger.Information($"GraphQLPost finished after {sw.ElapsedMilliseconds}ms");
+            _logger.Information($"GraphQLPost: {sw.ElapsedMilliseconds}ms");
 
             return Ok(result);
         }

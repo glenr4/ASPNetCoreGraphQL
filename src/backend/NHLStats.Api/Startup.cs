@@ -12,27 +12,24 @@ using NHLStats.Api.Models;
 using NHLStats.Core.Data;
 using NHLStats.Data;
 using NHLStats.Data.Repositories;
+using Serilog;
+using Serilog.Core;
 
 namespace NHLStats.Api
 {
     public class Startup
     {
         // Log everything
-        //public static readonly LoggerFactory MyLoggerFactory
-        //	= new LoggerFactory(new[] { new ConsoleLoggerProvider((_, __) => true, true) });
-
-        // Log only query execution
         //public static readonly LoggerFactory MyLoggerFactory = new LoggerFactory(new[]
-        //                                        {
-        //                                            new ConsoleLoggerProvider((category, level)
-        //                                                => category == DbLoggerCategory.Database.Command.Name
-        //                                                   && level == LogLevel.Information, true)
-        //                                        });
+        //                                    { new DebugLoggerProvider() });
+
+        // Log only database entries
+        public static string logCategory = DbLoggerCategory.Database.Command.Name;
 
         public static readonly LoggerFactory MyLoggerFactory = new LoggerFactory(new[]
                                                 {
                                                     new DebugLoggerProvider( (category, level) =>
-                                                        category == DbLoggerCategory.Database.Command.Name
+                                                        category == logCategory
                                                            && level == LogLevel.Information)
                                                 });
 
@@ -49,8 +46,20 @@ namespace NHLStats.Api
             services.AddMvc();
 
             services.AddDbContext<NHLStatsContext>(options => options.UseSqlServer(Configuration["ConnectionStrings:NHLStatsDb"])
-                                                                        .UseLoggerFactory(MyLoggerFactory)  // Warning: Do not create a new ILoggerFactory instance each time
-                                                                        );
+                                                                        .UseLoggerFactory(MyLoggerFactory));
+
+            // Use same category as the database
+            //Microsoft.Extensions.Logging.ILogger logger = MyLoggerFactory.CreateLogger(logCategory);
+            //services.AddSingleton<ILogger>(logger);
+
+            // Log to file
+            Logger logger = new LoggerConfiguration()
+                .MinimumLevel.Information()
+                .Enrich.FromLogContext()
+                .WriteTo.RollingFile(@"logs\Information-{Date}.log")
+                .CreateLogger();
+
+            services.AddSingleton<Serilog.ILogger>(logger);
 
             services.AddTransient<IPlayerRepository, PlayerRepository>();
             services.AddTransient<ISkaterStatisticRepository, SkaterStatisticRepository>();
